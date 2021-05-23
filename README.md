@@ -1,6 +1,5 @@
 # Test Driven Development
 
-
 ## Setup Environment and Depenendencies
 
 ```bash
@@ -9,10 +8,8 @@
 > pip install -r requirements.txt
 ```
 
-
 ## Run
 
 ```bash
-> export FLASK_APP=main.py
-> flask run
+> python main.py
 ```
