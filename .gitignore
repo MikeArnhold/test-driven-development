@@ -2,3 +2,4 @@
 *.pyc
 env
 .mypy_cache
+ssh-config
