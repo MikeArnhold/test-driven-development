@@ -27,3 +27,13 @@ class TemplateRenderTests(TestCase):
 
         with app.app_context():
             self.assertEqual("<div>42</div>", view())
+
+    def test_render_p_bar_33(self) -> None:
+        """render bar=33 within p"""
+
+        @template_render(render_template_string, r"<p>{{ bar }}</p>")
+        def view():
+            return dict(bar=33)
+
+        with app.app_context():
+            self.assertEqual("<p>33</p>", view())
