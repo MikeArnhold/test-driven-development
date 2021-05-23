@@ -2,7 +2,8 @@
 from functools import partial, reduce
 from typing import Any, Callable, Text
 
-from flask import render_template
+from flask import jsonify, render_template
+from flask.wrappers import Response
 
 from app_types import TRender, TView, TViewDecorator
 
@@ -25,6 +26,15 @@ def endpoint(
         return view
 
     return decorator
+
+
+def rest(view: TView) -> Callable[..., Response]:
+    """Decorate view to jsonify data"""
+
+    def wrapper(*args: Any, **kwargs: Any):
+        return jsonify(view(*args, **kwargs))
+
+    return wrapper
 
 
 def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
