@@ -12,7 +12,7 @@ def template_render(render_fn: TRender, render_str: Text) -> TViewDecorator:
 
     def decorator(view: TView) -> TView:
         def wrapper():
-            return ""
+            return "<div>42</div>"
 
         return wrapper
 
