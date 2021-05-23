@@ -1,13 +1,15 @@
 """App routes"""
+from typing import Dict
+
 from flask import Flask
 
 app = Flask("TDD")
 
 
 @app.route("/")
-def index():
+def index() -> Dict[str, str]:
     """Index view"""
-    return "Hello, World!"
+    return dict(greeting="Hello, World!")
 
 
 if __name__ == "__main__":
