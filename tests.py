@@ -1,4 +1,5 @@
 """Test implementations"""
+from typing import Callable
 from unittest import TestCase
 
 from flask import render_template_string
@@ -78,3 +79,33 @@ class EnpointTests(TestCase):
             pass
 
         self.assertEqual(view, passed)
+
+    def test_wrapper_to_route(self) -> None:
+        """decorated function passed to route with decorators"""
+        passed: Callable[[], None]
+        called = []
+
+        def route(view):
+            nonlocal passed
+            passed = view
+
+        def dec_a(view):
+            def wrapper():
+                called.append("a")
+                return view()
+
+            return wrapper
+
+        def dec_b(view):
+            def wrapper():
+                called.append("b")
+                return view()
+
+            return wrapper
+
+        @endpoint(route, dec_a, dec_b)
+        def view():
+            called.append("v")
+
+        passed()
+        self.assertListEqual(["a", "b", "v"], called)
