@@ -9,7 +9,7 @@ from app_types import TRender, TView, TViewDecorator
 
 
 def endpoint(
-    route: Callable[[TView], TView], *decorators: Callable[[TView], TView]
+    route: TViewDecorator, *decorators: TViewDecorator
 ) -> TViewDecorator:
     """Endpoint factory for views, that return data only
 
