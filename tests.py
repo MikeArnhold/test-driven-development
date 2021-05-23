@@ -2,9 +2,9 @@
 from typing import Callable
 from unittest import TestCase
 
-from flask import render_template_string
+from flask import Response, render_template_string
 
-from decorators import endpoint, view_format
+from decorators import endpoint, rest, view_format
 from main import app, index
 
 
@@ -109,3 +109,41 @@ class EnpointTests(TestCase):
 
         passed()
         self.assertListEqual(["a", "b", "v"], called)
+
+
+class RestTests(TestCase):
+    """rest tests"""
+
+    def test_jsonify(self) -> None:
+        """Data will be jsonified"""
+
+        @rest
+        def view():
+            return dict()
+
+        with app.app_context():
+            self.assertTrue(isinstance(view(), Response))
+
+    def test_data(self) -> None:
+        """Data remain unchanged"""
+
+        @rest
+        def view():
+            return dict(foo=33)
+
+        with app.app_context():
+            # pylint: disable=no-member
+            self.assertEqual({"foo": 33}, view().json)
+
+    def test_params(self) -> None:
+        """Data remain unchanged"""
+
+        @rest
+        def view(key, value="mama"):
+            ret = {}
+            ret[key] = value
+            return ret
+
+        with app.app_context():
+            # pylint: disable=no-member
+            self.assertEqual({"smurf": "papa"}, view("smurf", "papa").json)
