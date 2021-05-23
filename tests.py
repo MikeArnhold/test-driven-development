@@ -37,3 +37,15 @@ class TemplateRenderTests(TestCase):
 
         with app.app_context():
             self.assertEqual("<p>33</p>", view())
+
+    def test_render_span_parameters(self) -> None:
+        """render view parameters within span"""
+
+        @template_render(render_template_string, r"<span>{{ smurf }}</span>")
+        def view(key, value="papa"):
+            ret = {}
+            ret[key] = value
+            return ret
+
+        with app.app_context():
+            self.assertEqual("<span>mama</span>", view("smurf", "mama"))
