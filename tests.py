@@ -1,9 +1,10 @@
 """Test implementations"""
+from typing import Callable
 from unittest import TestCase
 
 from flask import render_template_string
 
-from decorators import view_format
+from decorators import endpoint, view_format
 from main import app, index
 
 
@@ -49,3 +50,58 @@ class ViewFormatTests(TestCase):
 
         with app.app_context():
             self.assertEqual("<span>mama</span>", view("smurf", "mama"))
+
+
+class EnpointTests(TestCase):
+    """endpoint tests"""
+
+    def test_wrapped_unchanged(self) -> None:
+        """leaves decorated function unchanged"""
+
+        def route(_):
+            pass
+
+        def view():
+            pass
+
+        self.assertEqual(view, endpoint(route)(view))
+
+    def test_wrapped_to_route(self) -> None:
+        """decorated function passed to route"""
+        passed = None
+
+        def route(view):
+            nonlocal passed
+            passed = view
+
+        @endpoint(route)
+        def view():
+            pass
+
+        self.assertEqual(view, passed)
+
+    def test_wrapper_to_route(self) -> None:
+        """decorated function passed to route with decorators"""
+        passed: Callable[[], None]
+
+        def route(view):
+            nonlocal passed
+            passed = view
+
+        def dec_a(view):
+            def wrapper():
+                return ["a"] + view()
+
+            return wrapper
+
+        def dec_b(view):
+            def wrapper():
+                return ["b"] + view()
+
+            return wrapper
+
+        @endpoint(route, dec_a, dec_b)
+        def view():
+            return ["v"]
+
+        self.assertListEqual(["a", "b", "v"], passed())
