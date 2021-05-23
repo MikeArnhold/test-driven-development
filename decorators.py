@@ -1,10 +1,30 @@
 """Decorator implementations"""
 from functools import partial, reduce
-from typing import Any, Text
+from typing import Any, Callable, Text
 
 from flask import render_template
 
 from app_types import TRender, TView, TViewDecorator
+
+
+def endpoint(
+    route: Callable[[TView], TView], *decorators: Callable[[TView], TView]
+) -> TViewDecorator:
+    """Endpoint factory for views, that return data only
+
+    Target function will be decorated by decorators in reverse order.
+    The resulting wrapper is fed into the route.
+    """
+
+    def wrap(func, decorator):
+        return decorator(func)
+
+    def decorator(view: TView) -> TView:
+        wrapper = reduce(wrap, reversed(decorators), view)
+        route(wrapper)
+        return view
+
+    return decorator
 
 
 def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
@@ -15,20 +35,6 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
             return format_fn(format_str, **view(*args, **kwargs))
 
         return wrapper
-
-    return decorator
-
-
-def endpoint(route, *decorators) -> TViewDecorator:
-    """Endpoint factory for views, that return data only"""
-
-    def wrap(func, decorator):
-        return decorator(func)
-
-    def decorator(view: TView) -> TView:
-        wrapper = reduce(wrap, reversed(decorators), view)
-        route(wrapper)
-        return view
 
     return decorator
 
