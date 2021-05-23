@@ -1,5 +1,8 @@
 """Decorator implementations"""
+from functools import partial
 from typing import Any, Callable, Dict, Text
+
+from flask import render_template
 
 TRender = Callable[[Text, Any], Text]
 
@@ -17,3 +20,6 @@ def template_render(render_fn: TRender, render_str: Text) -> TViewDecorator:
         return wrapper
 
     return decorator
+
+
+template = partial(template_render, render_template)
