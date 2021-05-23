@@ -64,3 +64,17 @@ class EnpointTests(TestCase):
             pass
 
         self.assertEqual(view, endpoint(route)(view))
+
+    def test_wrapped_to_route(self) -> None:
+        """decorated function passed to route"""
+        passed = None
+
+        def route(view):
+            nonlocal passed
+            passed = view
+
+        @endpoint(route)
+        def view():
+            pass
+
+        self.assertEqual(view, passed)
