@@ -1,5 +1,5 @@
 """Decorator implementations"""
-from functools import partial
+from functools import partial, reduce
 from typing import Any, Text
 
 from flask import render_template
@@ -22,11 +22,12 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
 def endpoint(route, *decorators) -> TViewDecorator:
     """Endpoint factory for views, that return data only"""
 
-    def decorator(view: TView) -> TView:
-        def wrapper():
-            return ""
+    def wrap(func, decorator):
+        return decorator(func)
 
-        route(view)
+    def decorator(view: TView) -> TView:
+        wrapper = reduce(wrap, reversed(decorators), view)
+        route(wrapper)
         return view
 
     return decorator
