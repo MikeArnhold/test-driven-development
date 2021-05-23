@@ -9,7 +9,7 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
 
     def decorator(view: TView) -> TView:
         def wrapper():
-            return "<div>42</div>"
+            return format_fn(format_str, **view())
 
         return wrapper
 
