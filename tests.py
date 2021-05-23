@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from flask import render_template_string
 
-from decorators import view_format
+from decorators import endpoint, view_format
 from main import app, index
 
 
@@ -49,3 +49,18 @@ class ViewFormatTests(TestCase):
 
         with app.app_context():
             self.assertEqual("<span>mama</span>", view("smurf", "mama"))
+
+
+class EnpointTests(TestCase):
+    """endpoint tests"""
+
+    def test_wrapped_unchanged(self) -> None:
+        """leaves decorated function unchanged"""
+
+        def route(_):
+            pass
+
+        def view():
+            pass
+
+        self.assertEqual(view, endpoint(route)(view))

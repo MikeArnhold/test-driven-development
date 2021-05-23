@@ -19,4 +19,16 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
     return decorator
 
 
+def endpoint(route) -> TViewDecorator:
+    """Endpoint factory for views, that return data only"""
+
+    def decorator(view: TView) -> TView:
+        def wrapper():
+            return ""
+
+        return wrapper
+
+    return decorator
+
+
 template = partial(view_format, render_template)
