@@ -8,8 +8,8 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
     """Decorator factory to render view data via template"""
 
     def decorator(view: TView) -> TView:
-        def wrapper() -> Text:
-            return ""
+        def wrapper():
+            return "<div>42</div>"
 
         return wrapper
 
