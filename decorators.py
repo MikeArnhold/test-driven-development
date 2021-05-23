@@ -11,8 +11,8 @@ def template_render(render_fn: TRender, render_str: Text) -> TViewDecorator:
     """Decorator factory to render view data via template"""
 
     def decorator(view: TView) -> TView:
-        def wrapper():
-            return render_fn(render_str, **view())
+        def wrapper(*args: Any, **kwargs: Any):
+            return render_fn(render_str, **view(*args, **kwargs))
 
         return wrapper
 
