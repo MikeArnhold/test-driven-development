@@ -13,8 +13,12 @@ def endpoint(
 ) -> TViewDecorator:
     """Endpoint factory for views, that return data only
 
-    Target function will be decorated by decorators in reverse order.
-    The resulting wrapper is fed into the route.
+    Arguments:
+        route: Intended to be app.route(...)
+        decorators: Used in reverse order. Decorator stack is fed into route.
+
+    Returns:
+        Decorator that will return unwrapped target function.
     """
 
     def wrap(func, decorator):
