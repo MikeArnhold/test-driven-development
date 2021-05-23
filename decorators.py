@@ -26,6 +26,7 @@ def endpoint(route) -> TViewDecorator:
         def wrapper():
             return ""
 
+        route(view)
         return view
 
     return decorator
