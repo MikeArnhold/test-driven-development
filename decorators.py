@@ -4,6 +4,7 @@ from typing import Any, Callable, Text
 
 from flask import jsonify, render_template
 from flask.wrappers import Response
+from werkzeug.wrappers.response import Response as WerkzeugResponse
 
 from app_types import TRender, TView, TViewDecorator
 
@@ -47,7 +48,10 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
 
     def decorator(view: TView) -> TView:
         def wrapper(*args: Any, **kwargs: Any):
-            return format_fn(format_str, **view(*args, **kwargs))
+            context = view(*args, **kwargs)
+            if isinstance(context, WerkzeugResponse):
+                return None
+            return format_fn(format_str, **context)
 
         return wrapper
 
