@@ -6,7 +6,7 @@ from flask import Response, render_template_string
 
 from decorators import endpoint, parameters, rest, view_format
 from main import app, index, service
-from request import BaseRequest
+from request import BaseFormRequest
 
 
 class TestIndex(TestCase):
@@ -238,7 +238,7 @@ class ParametersTests(TestCase):
         self.assertEqual(42, view())
 
 
-class LazyMockRequest(BaseRequest):
+class LazyMockFormRequest(BaseFormRequest):
     """lazy mock request"""
 
     @property
@@ -256,7 +256,7 @@ class SeriveTests(TestCase):
     def test_new_servive(self) -> None:
         """Identify new serive"""
 
-        class _MockRequest(LazyMockRequest):
+        class _MockRequest(LazyMockFormRequest):
             @property
             def method(self):
                 return "GET"

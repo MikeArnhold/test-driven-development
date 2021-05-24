@@ -3,7 +3,7 @@ from abc import ABC, abstractproperty
 from typing import Any, Dict
 
 
-class BaseRequest(ABC):
+class BaseFormRequest(ABC):
     """Base request"""
 
     @abstractproperty
