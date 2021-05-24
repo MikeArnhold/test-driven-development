@@ -225,3 +225,12 @@ class ParametersTests(TestCase):
         view(value_b=33)  # pylint: disable=no-value-for-parameter
 
         self.assertEqual((42, 33), got)
+
+    def test_return(self) -> None:
+        """return wrapped return value"""
+
+        @parameters()
+        def view():
+            return 42
+
+        self.assertEqual(42, view())
