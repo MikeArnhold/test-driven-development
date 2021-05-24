@@ -295,3 +295,17 @@ class SeriveTests(TestCase):
             service_id=11, service_request=_MockRequest(), services=services
         )
         self.assertTrue(11 in services.keys())
+
+    def test_don_create_new_service_when_get(self) -> None:
+        """Don't create new service on get"""
+        services: Dict[int, str] = {}
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        service(
+            service_id=11, service_request=_MockRequest(), services=services
+        )
+        self.assertTrue(11 not in services.keys())
