@@ -310,3 +310,21 @@ class SeriveTests(TestCase):
             service_id=11, service_request=_MockRequest(), services=services
         )
         self.assertTrue(11 not in services.keys())
+
+    def test_create_new_service_with_name(self) -> None:
+        """Create new posted service with name"""
+        services = {}
+
+        class _MockRequest(LazyMockFormRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": "foo"}
+
+        service(
+            service_id=3, service_request=_MockRequest(), services=services
+        )
+        self.assertEqual("foo", services[3])
