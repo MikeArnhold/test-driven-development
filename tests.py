@@ -328,3 +328,19 @@ class SeriveTests(TestCase):
             service_id=3, service_request=_MockRequest(), services=services
         )
         self.assertEqual("foo", services[3])
+
+    def test_service_id_and_anme(self) -> None:
+        """Identify new serive"""
+
+        class _MockRequest(LazyMockFormRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=4, service_request=_MockRequest(), services={4: "bar"}
+        )
+        self.assertEqual(
+            (4, "bar"),
+            (data.get("service_id"), data.get("service_name")),
+        )
