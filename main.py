@@ -20,7 +20,7 @@ def service(
     service_id: int, service_request: BaseFormRequest, services: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Service view"""
-    return dict(new=True)
+    return dict(new=service_id not in services.keys())
 
 
 if __name__ == "__main__":
