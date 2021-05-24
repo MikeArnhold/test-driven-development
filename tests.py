@@ -1,5 +1,5 @@
 """Test implementations"""
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 from unittest import TestCase
 
 from flask import Response, render_template_string
@@ -268,7 +268,7 @@ class SeriveTests(TestCase):
     def test_service_not_new(self) -> None:
         """Identify existing serive"""
 
-        class _MockRequest(LazyMockFormRequest):
+        class _MockRequest(BaseMockRequest):
             @property
             def method(self):
                 return "GET"
@@ -277,3 +277,21 @@ class SeriveTests(TestCase):
             service_id=42, service_request=_MockRequest(), services={42: ""}
         )
         self.assertFalse(data["new"])
+
+    def test_create_new_service(self) -> None:
+        """Identify new serive"""
+        services: Dict[int, str] = {}
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": ""}
+
+        service(
+            service_id=11, service_request=_MockRequest(), services=services
+        )
+        self.assertTrue(11 in services.keys())
