@@ -2,27 +2,45 @@
 from typing import Any, Callable, Dict
 
 from flask import Flask
+from flask import redirect as url_redirect
+from flask import url_for
 
 from decorators import endpoint, parameters, template
 from request import BaseFormRequest, CompleteRequest
 
 app = Flask("TDD")
 
+SERVICES = {}
 
-@endpoint(app.route("/"), template("index.html"))
+
+def _service_success_redirect(service_id):
+    return url_redirect(url_for("endpoint_service", service_id=service_id))
+
+
+endpoint_index = endpoint(
+    app.route("/"),
+    template("index.html"),
+)
+
+
+endpoint_service = endpoint(
+    app.route("/service/<int:service_id>", methods=["GET", "POST"]),
+    template("service.html"),
+    parameters(
+        service_request=CompleteRequest(),
+        services=SERVICES,
+        redirect=_service_success_redirect,
+    ),
+)
+
+
+@endpoint_index
 def index() -> Dict[str, str]:
     """Index view"""
     return dict(greeting="Hello, World!")
 
 
-SERVICES = {}
-
-
-@endpoint(
-    app.route("/service/<int:service_id>", methods=["GET", "POST"]),
-    template("service.html"),
-    parameters(service_request=CompleteRequest(), services=SERVICES),
-)
+@endpoint_service
 def service(
     service_id: int,
     service_request: BaseFormRequest,
