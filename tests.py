@@ -66,6 +66,18 @@ class ViewFormatTests(TestCase):
             except TypeError:
                 self.fail("TypeError was raised")
 
+    def test_return_pure_response(self) -> None:
+        """Text data don't cause exception"""
+
+        response = WerkzeugResponse("abc")
+
+        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        def view():
+            return response
+
+        with app.app_context():
+            self.assertEqual(response, view())
+
 
 class EnpointTests(TestCase):
     """endpoint tests"""
