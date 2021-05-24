@@ -17,7 +17,7 @@ def index() -> Dict[str, str]:
 
 @endpoint(app.route("/service/<int:service_id>"), template("service.html"))
 def service(
-    service_id: int, service_request: BaseFormRequest, services: Dict[str, Any]
+    service_id: int, service_request: BaseFormRequest, services: Dict[int, str]
 ) -> Dict[str, Any]:
     """Service view"""
     new = service_id not in services.keys()
