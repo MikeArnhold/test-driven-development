@@ -58,7 +58,9 @@ def parameters(*args, **kwargs) -> TViewDecorator:
     """Decorator factory to parse default arguments"""
 
     def decorator(view: TView) -> TView:
-        def wrapper():
+        def wrapper(*w_args):
+            nonlocal args
+            args += w_args
             view(*args, **kwargs)
 
         return wrapper
