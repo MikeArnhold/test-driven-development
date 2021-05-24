@@ -280,7 +280,7 @@ class SeriveTests(TestCase):
         self.assertFalse(data["new"])
 
     def test_create_new_service(self) -> None:
-        """Identify new serive"""
+        """Create new posted service"""
         services = {}
 
         class _MockRequest(LazyMockFormRequest):
@@ -296,3 +296,17 @@ class SeriveTests(TestCase):
             service_id=11, service_request=_MockRequest(), services=services
         )
         self.assertTrue(11 in services.keys())
+
+    def test_don_create_new_service_when_get(self) -> None:
+        """Don't create new service on get"""
+        services = {}
+
+        class _MockRequest(LazyMockFormRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        service(
+            service_id=11, service_request=_MockRequest(), services=services
+        )
+        self.assertTrue(11 not in services.keys())
