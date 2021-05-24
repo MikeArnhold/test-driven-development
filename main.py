@@ -20,9 +20,8 @@ def service(
     service_id: int, service_request: BaseFormRequest, services: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Service view"""
-    new = False
-    if service_id not in services.keys():
-        new = True
+    new = service_id not in services.keys()
+    if service_request.method == "POST":
         services[service_id] = ""
     return dict(new=new)
 
