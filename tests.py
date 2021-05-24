@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Tuple
 from unittest import TestCase
 
 from flask import Response, render_template_string
+from werkzeug.wrappers.response import Response as WerkzeugResponse
 
 from decorators import endpoint, parameters, rest, view_format
 from main import app, index, service
@@ -51,6 +52,31 @@ class ViewFormatTests(TestCase):
 
         with app.app_context():
             self.assertEqual("<span>mama</span>", view("smurf", "mama"))
+
+    def test_no_fail_when_data_is_response(self) -> None:
+        """Text data don't cause exception"""
+
+        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        def view():
+            return WerkzeugResponse()
+
+        with app.app_context():
+            try:
+                view()
+            except TypeError:
+                self.fail("TypeError was raised")
+
+    def test_return_pure_response(self) -> None:
+        """Text data don't cause exception"""
+
+        response = WerkzeugResponse("abc")
+
+        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        def view():
+            return response
+
+        with app.app_context():
+            self.assertEqual(response, view())
 
 
 class EnpointTests(TestCase):
