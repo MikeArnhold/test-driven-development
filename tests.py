@@ -184,6 +184,19 @@ class ParametersTests(TestCase):
             nonlocal got
             got = value
 
-        view()
+        view()  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual(42, got)
+
+    def test_pass_kwarg(self) -> None:
+        """pass keyword arguments"""
+        got = -1
+
+        @parameters(value=42)
+        def view(value=-1):
+            nonlocal got
+            got = value
+
+        view()  # pylint: disable=no-value-for-parameter
 
         self.assertEqual(42, got)
