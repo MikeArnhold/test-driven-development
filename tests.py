@@ -1,11 +1,12 @@
 """Test implementations"""
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 from unittest import TestCase
 
 from flask import Response, render_template_string
 
 from decorators import endpoint, parameters, rest, view_format
-from main import app, index
+from main import app, index, service
+from request import BaseFormRequest
 
 
 class TestIndex(TestCase):
@@ -234,3 +235,111 @@ class ParametersTests(TestCase):
             return 42
 
         self.assertEqual(42, view())
+
+
+class BaseMockRequest(BaseFormRequest):
+    """lazy mock request"""
+
+    @property
+    def method(self):
+        raise NotImplementedError()
+
+    @property
+    def form(self):
+        raise NotImplementedError()
+
+
+class SeriveTests(TestCase):
+    """service tests"""
+
+    def test_new_service(self) -> None:
+        """Identify new serive"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=42, service_request=_MockRequest(), services={}
+        )
+        self.assertTrue(data["new"])
+
+    def test_service_not_new(self) -> None:
+        """Identify existing serive"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=42, service_request=_MockRequest(), services={42: ""}
+        )
+        self.assertFalse(data["new"])
+
+    def test_create_new_service(self) -> None:
+        """Identify new serive"""
+        services: Dict[int, str] = {}
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": ""}
+
+        service(
+            service_id=11, service_request=_MockRequest(), services=services
+        )
+        self.assertTrue(11 in services.keys())
+
+    def test_don_create_new_service_when_get(self) -> None:
+        """Don't create new service on get"""
+        services: Dict[int, str] = {}
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        service(
+            service_id=11, service_request=_MockRequest(), services=services
+        )
+        self.assertTrue(11 not in services.keys())
+
+    def test_create_new_service_with_name(self) -> None:
+        """Create new posted service with name"""
+        services: Dict[int, str] = {}
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": "foo"}
+
+        service(
+            service_id=3, service_request=_MockRequest(), services=services
+        )
+        self.assertEqual("foo", services[3])
+
+    def test_service_id_and_anme(self) -> None:
+        """Identify new serive"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=4, service_request=_MockRequest(), services={4: "bar"}
+        )
+        self.assertEqual(
+            (4, "bar"),
+            (data.get("service_id"), data.get("service_name")),
+        )

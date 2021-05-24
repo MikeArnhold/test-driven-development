@@ -1,1 +1,9 @@
-<p>serive id {{ service_id }}</p>
+{% if new %}
+<p>New Servive {{ service_id }}</p>
+{% else %}
+<p>Servive {{ service_id }}</p>
+{% endif %}
+<form method="POST">
+    <input type="text" name="name" value="{{ service_name }}"><br>
+    <input type="submit" value="Submit">
+</form>
