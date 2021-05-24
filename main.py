@@ -22,7 +22,7 @@ def service(
     """Service view"""
     new = service_id not in services.keys()
     if service_request.method == "POST":
-        services[service_id] = ""
+        services[service_id] = service_request.form["name"]
     return dict(new=new)
 
 
