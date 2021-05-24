@@ -252,7 +252,7 @@ class BaseMockRequest(BaseFormRequest):
 class SeriveTests(TestCase):
     """service tests"""
 
-    def test_new_servive(self) -> None:
+    def test_new_service(self) -> None:
         """Identify new serive"""
 
         class _MockRequest(BaseMockRequest):
@@ -264,3 +264,16 @@ class SeriveTests(TestCase):
             service_id=42, service_request=_MockRequest(), services={}
         )
         self.assertTrue(data["new"])
+
+    def test_service_not_new(self) -> None:
+        """Identify existing serive"""
+
+        class _MockRequest(LazyMockFormRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=42, service_request=_MockRequest(), services={42: ""}
+        )
+        self.assertFalse(data["new"])
