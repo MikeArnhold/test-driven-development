@@ -26,6 +26,7 @@ def endpoint(
 
     def decorator(view: TView) -> TView:
         wrapper = reduce(wrap, reversed(decorators), view)
+        wrapper.__name__ = f"endpoint_{view.__name__}"
         route(wrapper)
         return view
 
