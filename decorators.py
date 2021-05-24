@@ -44,13 +44,18 @@ def rest(view: TView) -> Callable[..., Response]:
 
 
 def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
-    """Decorator factory to render view data via template"""
+    """Decorator factory to render view data via template
+
+    Decorator return result of format_fn with format_str to the view data.
+    If the view returned a response object, then the it will be returned
+    instead.
+    """
 
     def decorator(view: TView) -> TView:
         def wrapper(*args: Any, **kwargs: Any):
             context = view(*args, **kwargs)
             if isinstance(context, WerkzeugResponse):
-                return None
+                return context
             return format_fn(format_str, **context)
 
         return wrapper
