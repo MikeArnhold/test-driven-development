@@ -1,5 +1,5 @@
 """App routes"""
-from typing import Dict
+from typing import Any, Dict
 
 from flask import Flask
 
@@ -12,6 +12,12 @@ app = Flask("TDD")
 def index() -> Dict[str, str]:
     """Index view"""
     return dict(greeting="Hello, World!")
+
+
+@endpoint(app.route("/service/<int:service_id>"), template("service.html"))
+def service(service_id) -> Dict[str, Any]:
+    """Service view"""
+    return dict()
 
 
 if __name__ == "__main__":
