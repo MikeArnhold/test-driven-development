@@ -212,3 +212,16 @@ class ParametersTests(TestCase):
         view(33)  # pylint: disable=no-value-for-parameter
 
         self.assertEqual((42, 33), got)
+
+    def test_kwarg(self) -> None:
+        """call keyword arguments"""
+        got = (-1, -1)
+
+        @parameters(value_a=42)
+        def view(value_a=-1, value_b=-1):
+            nonlocal got
+            got = (value_a, value_b)
+
+        view(value_b=33)  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual((42, 33), got)
