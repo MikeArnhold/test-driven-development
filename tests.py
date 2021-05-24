@@ -106,6 +106,28 @@ class EnpointTests(TestCase):
 
         self.assertListEqual(["a", "b", "v"], passed())
 
+    def test_multiple_enpoints(self) -> None:
+        """multiple endpoints don't break app"""
+
+        def dec(view):
+            def wrapper():
+                return view()
+
+            return wrapper
+
+        @endpoint(app.route("/a"), dec)
+        def view_a() -> dict:
+            return {}
+
+        try:
+
+            @endpoint(app.route("/b"), dec)
+            def view_b() -> dict:
+                return {}
+
+        except AssertionError:
+            self.fail()
+
 
 class RestTests(TestCase):
     """rest tests"""
