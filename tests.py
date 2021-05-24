@@ -200,3 +200,16 @@ class ParametersTests(TestCase):
         view()  # pylint: disable=no-value-for-parameter
 
         self.assertEqual(42, got)
+
+    def test_arg(self) -> None:
+        """call positional arguments"""
+        got = (-1, -1)
+
+        @parameters(42)
+        def view(value_a, value_b):
+            nonlocal got
+            got = (value_a, value_b)
+
+        view(33)  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual((42, 33), got)
