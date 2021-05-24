@@ -4,6 +4,7 @@ from typing import Any, Dict
 from flask import Flask
 
 from decorators import endpoint, template
+from request import BaseFormRequest
 
 app = Flask("TDD")
 
@@ -15,9 +16,11 @@ def index() -> Dict[str, str]:
 
 
 @endpoint(app.route("/service/<int:service_id>"), template("service.html"))
-def service(service_id) -> Dict[str, Any]:
+def service(
+    service_id: int, service_request: BaseFormRequest, services: Dict[str, Any]
+) -> Dict[str, Any]:
     """Service view"""
-    return dict()
+    return dict(new=True)
 
 
 if __name__ == "__main__":

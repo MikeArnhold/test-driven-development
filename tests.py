@@ -5,7 +5,8 @@ from unittest import TestCase
 from flask import Response, render_template_string
 
 from decorators import endpoint, parameters, rest, view_format
-from main import app, index
+from main import app, index, service
+from request import BaseFormRequest
 
 
 class TestIndex(TestCase):
@@ -234,3 +235,32 @@ class ParametersTests(TestCase):
             return 42
 
         self.assertEqual(42, view())
+
+
+class BaseMockRequest(BaseFormRequest):
+    """lazy mock request"""
+
+    @property
+    def method(self):
+        raise NotImplementedError()
+
+    @property
+    def form(self):
+        raise NotImplementedError()
+
+
+class SeriveTests(TestCase):
+    """service tests"""
+
+    def test_new_servive(self) -> None:
+        """Identify new serive"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "GET"
+
+        data = service(
+            service_id=42, service_request=_MockRequest(), services={}
+        )
+        self.assertTrue(data["new"])
