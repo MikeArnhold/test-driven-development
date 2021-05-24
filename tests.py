@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from flask import Response, render_template_string
 
-from decorators import endpoint, rest, view_format
+from decorators import endpoint, parameters, rest, view_format
 from main import app, index
 
 
@@ -170,3 +170,20 @@ class RestTests(TestCase):
             # pylint: disable=no-member
             view(42, foo="bar")
             self.assertEqual(((42,), {"foo": "bar"}), (got_args, got_kwargs))
+
+
+class ParametersTests(TestCase):
+    """parameter tests"""
+
+    def test_pass_arg(self) -> None:
+        """pass positional arguments"""
+        got = -1
+
+        @parameters(42)
+        def view(value):
+            nonlocal got
+            got = value
+
+        view()
+
+        self.assertEqual(42, got)

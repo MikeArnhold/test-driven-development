@@ -54,4 +54,13 @@ def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
     return decorator
 
 
+def parameters(*args, **kwargs) -> TViewDecorator:
+    """Decorator factory to parse default arguments"""
+
+    def decorator(view: TView) -> TView:
+        return view
+
+    return decorator
+
+
 template = partial(view_format, render_template)
