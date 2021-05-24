@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from flask import Response, render_template_string
 
-from decorators import endpoint, rest, view_format
+from decorators import endpoint, parameters, rest, view_format
 from main import app, index
 
 
@@ -170,3 +170,68 @@ class RestTests(TestCase):
             # pylint: disable=no-member
             view(42, foo="bar")
             self.assertEqual(((42,), {"foo": "bar"}), (got_args, got_kwargs))
+
+
+class ParametersTests(TestCase):
+    """parameter tests"""
+
+    def test_pass_arg(self) -> None:
+        """pass positional arguments"""
+        got = -1
+
+        @parameters(42)
+        def view(value):
+            nonlocal got
+            got = value
+
+        view()  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual(42, got)
+
+    def test_pass_kwarg(self) -> None:
+        """pass keyword arguments"""
+        got = -1
+
+        @parameters(value=42)
+        def view(value=-1):
+            nonlocal got
+            got = value
+
+        view()  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual(42, got)
+
+    def test_arg(self) -> None:
+        """call positional arguments"""
+        got = (-1, -1)
+
+        @parameters(42)
+        def view(value_a, value_b):
+            nonlocal got
+            got = (value_a, value_b)
+
+        view(33)  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual((42, 33), got)
+
+    def test_kwarg(self) -> None:
+        """call keyword arguments"""
+        got = (-1, -1)
+
+        @parameters(value_a=42)
+        def view(value_a=-1, value_b=-1):
+            nonlocal got
+            got = (value_a, value_b)
+
+        view(value_b=33)  # pylint: disable=no-value-for-parameter
+
+        self.assertEqual((42, 33), got)
+
+    def test_return(self) -> None:
+        """return wrapped return value"""
+
+        @parameters()
+        def view():
+            return 42
+
+        self.assertEqual(42, view())
