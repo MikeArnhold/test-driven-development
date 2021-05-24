@@ -59,7 +59,7 @@ def parameters(*args, **kwargs) -> TViewDecorator:
 
     def decorator(view: TView) -> TView:
         def wrapper():
-            view(*args)
+            view(*args, **kwargs)
 
         return wrapper
 
