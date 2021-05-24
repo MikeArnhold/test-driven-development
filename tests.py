@@ -370,3 +370,26 @@ class SeriveTests(TestCase):
             (4, "bar"),
             (data.get("service_id"), data.get("service_name")),
         )
+
+    def test_service_post_direct_response(self) -> None:
+        """POST success leads to a direct response"""
+
+        class _MockRequest(LazyMockFormRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": "foo"}
+
+        def _redirect(service_id):
+            return f"was redirected to {service_id}"
+
+        data = service(
+            service_id=25,
+            service_request=_MockRequest(),
+            services={},
+            redirect=_redirect,
+        )
+        self.assertEqual("was redirected to 25", data)

@@ -1,5 +1,5 @@
 """App routes"""
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from flask import Flask
 
@@ -24,7 +24,10 @@ SERVICES = {}
     parameters(service_request=CompleteRequest(), services=SERVICES),
 )
 def service(
-    service_id: int, service_request: BaseFormRequest, services: Dict[int, Any]
+    service_id: int,
+    service_request: BaseFormRequest,
+    services: Dict[int, Any],
+    redirect: Callable[[int], Any]=None,
 ) -> Dict[str, Any]:
     """Service view"""
     new = service_id not in services.keys()
