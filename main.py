@@ -27,13 +27,15 @@ def service(
     service_id: int,
     service_request: BaseFormRequest,
     services: Dict[int, Any],
-    redirect: Callable[[int], Any]=None,
+    redirect: Callable[[int], Any] = None,
 ) -> Dict[str, Any]:
     """Service view"""
     new = service_id not in services.keys()
     service_name = "" if new else services[service_id]
     if service_request.method == "POST":
         services[service_id] = service_request.form["name"]
+        if redirect:
+            return redirect(service_id)
     return dict(new=new, service_id=service_id, service_name=service_name)
 
 
