@@ -3,8 +3,8 @@ from typing import Any, Dict
 
 from flask import Flask
 
-from decorators import endpoint, template
-from request import BaseFormRequest
+from decorators import endpoint, parameters, template
+from request import BaseFormRequest, CompleteRequest
 
 app = Flask("TDD")
 
@@ -15,7 +15,14 @@ def index() -> Dict[str, str]:
     return dict(greeting="Hello, World!")
 
 
-@endpoint(app.route("/service/<int:service_id>"), template("service.html"))
+SERVICES: Dict[int, str] = {}
+
+
+@endpoint(
+    app.route("/service/<int:service_id>", methods=["GET", "POST"]),
+    template("service.html"),
+    parameters(service_request=CompleteRequest(), services=SERVICES),
+)
 def service(
     service_id: int, service_request: BaseFormRequest, services: Dict[int, str]
 ) -> Dict[str, Any]:
