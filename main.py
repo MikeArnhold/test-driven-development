@@ -8,13 +8,6 @@ from request import BaseFormRequest, CompleteRequest
 
 app = Flask("TDD")
 
-
-@endpoint(app.route("/"), template("index.html"))
-def index() -> Dict[str, str]:
-    """Index view"""
-    return dict(greeting="Hello, World!")
-
-
 SERVICES: Dict[int, str] = {}
 
 
@@ -22,7 +15,8 @@ def _service_success_redirect(service_id):
     return redirect(url_for("endpoint_service", service_id=service_id))
 
 
-@endpoint(
+endpoint_index = endpoint(app.route("/"), template("index.html"))
+endpoint_service = endpoint(
     app.route("/service/<int:service_id>", methods=["GET", "POST"]),
     template("service.html"),
     parameters(
@@ -31,6 +25,15 @@ def _service_success_redirect(service_id):
         success_redirect=_service_success_redirect,
     ),
 )
+
+
+@endpoint_index
+def index() -> Dict[str, str]:
+    """Index view"""
+    return dict(greeting="Hello, World!")
+
+
+@endpoint_service
 def service(
     service_id: int,
     service_request: BaseFormRequest,
