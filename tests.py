@@ -387,3 +387,27 @@ class SeriveTests(TestCase):
             (4, "bar"),
             (data.get("service_id"), data.get("service_name")),
         )
+
+    def test_use_success_redirect(self) -> None:
+        """POST success triggers redirect call"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": "foo"}
+
+        def _redirect(service_id):
+            return f"was redirected to service/{service_id}"
+
+        data = service(
+            service_id=4,
+            service_request=_MockRequest(),
+            services={4: "bar"},
+            success_redirect=_redirect,
+        )
+
+        self.assertEqual("was redirected to service/4", data)
