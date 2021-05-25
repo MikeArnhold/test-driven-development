@@ -287,7 +287,10 @@ class SeriveTests(TestCase):
                 return "GET"
 
         data = service(
-            service_id=42, service_request=_MockRequest(), services={}
+            service_id=42,
+            service_request=_MockRequest(),
+            services={},
+            success_redirect=lambda _: None,
         )
         self.assertTrue(data["new"])
 
@@ -300,7 +303,10 @@ class SeriveTests(TestCase):
                 return "GET"
 
         data = service(
-            service_id=42, service_request=_MockRequest(), services={42: ""}
+            service_id=42,
+            service_request=_MockRequest(),
+            services={42: ""},
+            success_redirect=lambda _: None,
         )
         self.assertFalse(data["new"])
 
@@ -318,7 +324,10 @@ class SeriveTests(TestCase):
                 return {"name": ""}
 
         service(
-            service_id=11, service_request=_MockRequest(), services=services
+            service_id=11,
+            service_request=_MockRequest(),
+            services=services,
+            success_redirect=lambda _: None,
         )
         self.assertTrue(11 in services.keys())
 
@@ -332,7 +341,10 @@ class SeriveTests(TestCase):
                 return "GET"
 
         service(
-            service_id=11, service_request=_MockRequest(), services=services
+            service_id=11,
+            service_request=_MockRequest(),
+            services=services,
+            success_redirect=lambda _: None,
         )
         self.assertTrue(11 not in services.keys())
 
@@ -350,7 +362,10 @@ class SeriveTests(TestCase):
                 return {"name": "foo"}
 
         service(
-            service_id=3, service_request=_MockRequest(), services=services
+            service_id=3,
+            service_request=_MockRequest(),
+            services=services,
+            success_redirect=lambda _: None,
         )
         self.assertEqual("foo", services[3])
 
@@ -363,9 +378,36 @@ class SeriveTests(TestCase):
                 return "GET"
 
         data = service(
-            service_id=4, service_request=_MockRequest(), services={4: "bar"}
+            service_id=4,
+            service_request=_MockRequest(),
+            services={4: "bar"},
+            success_redirect=lambda _: None,
         )
         self.assertEqual(
             (4, "bar"),
             (data.get("service_id"), data.get("service_name")),
         )
+
+    def test_use_success_redirect(self) -> None:
+        """POST success triggers redirect call"""
+
+        class _MockRequest(BaseMockRequest):
+            @property
+            def method(self):
+                return "POST"
+
+            @property
+            def form(self):
+                return {"name": "foo"}
+
+        def _redirect(service_id):
+            return f"was redirected to service/{service_id}"
+
+        data = service(
+            service_id=4,
+            service_request=_MockRequest(),
+            services={4: "bar"},
+            success_redirect=_redirect,
+        )
+
+        self.assertEqual("was redirected to service/4", data)
