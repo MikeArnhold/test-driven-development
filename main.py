@@ -1,7 +1,7 @@
 """App routes"""
 from typing import Any, Callable, Dict
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 
 from decorators import endpoint, parameters, template
 from request import BaseFormRequest, CompleteRequest
@@ -18,10 +18,18 @@ def index() -> Dict[str, str]:
 SERVICES: Dict[int, str] = {}
 
 
+def _service_success_redirect(service_id):
+    return redirect(url_for("endpoint_service", service_id=service_id))
+
+
 @endpoint(
     app.route("/service/<int:service_id>", methods=["GET", "POST"]),
     template("service.html"),
-    parameters(service_request=CompleteRequest(), services=SERVICES),
+    parameters(
+        service_request=CompleteRequest(),
+        services=SERVICES,
+        success_redirect=_service_success_redirect,
+    ),
 )
 def service(
     service_id: int,
