@@ -34,6 +34,7 @@ def service(
     service_name = "" if new else services[service_id]
     if service_request.method == "POST":
         services[service_id] = service_request.form["name"]
+        return success_redirect(service_id)
     return dict(new=new, service_id=service_id, service_name=service_name)
 
 
