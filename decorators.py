@@ -1,6 +1,6 @@
 """Decorator implementations"""
 from functools import partial, reduce
-from typing import Any, Callable, List, Text, Tuple
+from typing import Any, Callable, List, Tuple
 
 from flask import jsonify, render_template
 from flask.wrappers import Response
@@ -45,7 +45,7 @@ def rest(view: TView) -> Callable[..., Response]:
 
 def dict_format(
     format_fn: TRender,
-    format_str: Text,
+    format_str: str,
     format_non_dict: List[Tuple[type, Callable[[Any], Any]]] = None,
 ) -> TViewDecorator:
     """Decorator factory to render view data via format_fn"""
