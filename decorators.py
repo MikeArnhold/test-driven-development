@@ -53,10 +53,9 @@ def dict_format(
     def decorator(view: TView) -> TView:
         def wrapper(*args: Any, **kwargs: Any):
             context = view(*args, **kwargs)
-            if format_non_dict is not None:
-                for ctx_type, format_fallback in format_non_dict:
-                    if isinstance(context, ctx_type):
-                        return format_fallback(context)
+            for ctx_type, format_fallback in format_non_dict or ():
+                if isinstance(context, ctx_type):
+                    return format_fallback(context)
             return format_fn(format_str, **context)
 
         return wrapper
