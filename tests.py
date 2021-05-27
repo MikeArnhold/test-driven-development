@@ -35,7 +35,7 @@ class DictFormatTests(TestCase):
     def test_render_div_foo_42(self) -> None:
         """render foo=42 within div"""
 
-        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+        convert_dict = lambda d, fmt: fmt.format(**d)
 
         @convert((dict, convert_dict), fmt="__{foo}__")
         def view():
@@ -47,7 +47,7 @@ class DictFormatTests(TestCase):
     def test_render_p_bar_33(self) -> None:
         """render bar=33 within p"""
 
-        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+        convert_dict = lambda d, fmt: fmt.format(**d)
 
         @convert((dict, convert_dict), fmt="~~{bar}~~")
         def view():
@@ -59,7 +59,7 @@ class DictFormatTests(TestCase):
     def test_render_span_parameters(self) -> None:
         """render view parameters within span"""
 
-        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+        convert_dict = lambda d, fmt: fmt.format(**d)
 
         @convert((dict, convert_dict), fmt="--{smurf}--")
         def view(key, value="papa"):
@@ -75,8 +75,8 @@ class DictFormatTests(TestCase):
 
         response = WerkzeugResponse("abc")
 
-        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
-        return_plain = lambda d, _: d
+        convert_dict = lambda d, fmt: fmt.format(**d)
+        return_plain = lambda d, **_: d
 
         @convert(
             (dict, convert_dict),

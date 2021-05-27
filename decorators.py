@@ -43,7 +43,7 @@ def rest(view: TView) -> Callable[..., Response]:
 
 
 def convert(
-    *converters: Tuple[type, Callable[[Any, dict], Any]],
+    *converters: Tuple[type, Callable[..., Any]],
     **kwargs: Any,
 ) -> TViewDecorator:
     """Decorator factory to render view data via format_fn"""
@@ -53,7 +53,7 @@ def convert(
             context = view(*w_args, **w_kwargs)
             for c_type, converter in converters or ():
                 if isinstance(context, c_type):
-                    return converter(context, kwargs)
+                    return converter(context, **kwargs)
             return context
 
         return wrapper
@@ -75,5 +75,5 @@ def parameters(*args, **kwargs) -> TViewDecorator:
 
 template = partial(
     convert,
-    (dict, lambda d, kwargs: render_template(kwargs["name"], **d)),
+    (dict, lambda d, name: render_template(name, **d)),
 )
