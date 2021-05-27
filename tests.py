@@ -5,7 +5,7 @@ from unittest import TestCase
 from flask import Response, render_template_string
 from werkzeug.wrappers.response import Response as WerkzeugResponse
 
-from decorators import endpoint, parameters, rest, view_format
+from decorators import dict_format, endpoint, parameters, rest
 from main import app, index, service
 from request import BaseFormRequest
 
@@ -18,13 +18,13 @@ class TestIndex(TestCase):
         self.assertEqual({"greeting": "Hello, World!"}, index())
 
 
-class ViewFormatTests(TestCase):
+class DictFormatTests(TestCase):
     """view_format tests"""
 
     def test_render_div_foo_42(self) -> None:
         """render foo=42 within div"""
 
-        @view_format(render_template_string, r"<div>{{ foo }}</div>")
+        @dict_format(render_template_string, r"<div>{{ foo }}</div>")
         def view():
             return dict(foo=42)
 
@@ -34,7 +34,7 @@ class ViewFormatTests(TestCase):
     def test_render_p_bar_33(self) -> None:
         """render bar=33 within p"""
 
-        @view_format(render_template_string, r"<p>{{ bar }}</p>")
+        @dict_format(render_template_string, r"<p>{{ bar }}</p>")
         def view():
             return dict(bar=33)
 
@@ -44,7 +44,7 @@ class ViewFormatTests(TestCase):
     def test_render_span_parameters(self) -> None:
         """render view parameters within span"""
 
-        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        @dict_format(render_template_string, r"<span>{{ smurf }}</span>")
         def view(key, value="papa"):
             ret = {}
             ret[key] = value
@@ -56,7 +56,11 @@ class ViewFormatTests(TestCase):
     def test_no_fail_when_data_is_response(self) -> None:
         """Text data don't cause exception"""
 
-        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        @dict_format(
+            render_template_string,
+            r"<span>{{ smurf }}</span>",
+            format_non_dict=[(WerkzeugResponse, lambda d: d)],
+        )
         def view():
             return WerkzeugResponse()
 
@@ -71,7 +75,11 @@ class ViewFormatTests(TestCase):
 
         response = WerkzeugResponse("abc")
 
-        @view_format(render_template_string, r"<span>{{ smurf }}</span>")
+        @dict_format(
+            render_template_string,
+            r"<span>{{ smurf }}</span>",
+            format_non_dict=[(WerkzeugResponse, lambda d: d)],
+        )
         def view():
             return response
 
