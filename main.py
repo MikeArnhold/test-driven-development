@@ -15,10 +15,10 @@ def _service_success_redirect(service_id):
     return redirect(url_for("endpoint_service", service_id=service_id))
 
 
-endpoint_index = endpoint(app.route("/"), template("index.html"))
+endpoint_index = endpoint(app.route("/"), template(name="index.html"))
 endpoint_service = endpoint(
     app.route("/service/<int:service_id>", methods=["GET", "POST"]),
-    template("service.html"),
+    template(name="service.html"),
     parameters(
         service_request=CompleteRequest(),
         services=SERVICES,

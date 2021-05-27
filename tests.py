@@ -2,10 +2,10 @@
 from typing import Any, Callable, Dict, List, Tuple
 from unittest import TestCase
 
-from flask import Response, render_template_string
+from flask import Response
 from werkzeug.wrappers.response import Response as WerkzeugResponse
 
-from decorators import dict_format, endpoint, parameters, rest
+from decorators import convert, endpoint, parameters, rest
 from main import app, index, service
 from request import BaseFormRequest
 
@@ -21,64 +21,67 @@ class TestIndex(TestCase):
 class DictFormatTests(TestCase):
     """view_format tests"""
 
-    def test_render_div_foo_42(self) -> None:
-        """render foo=42 within div"""
+    def test_palin(self) -> None:
+        """return plain"""
+        data = dict(foo=42)
 
-        @dict_format(render_template_string, r"<div>{{ foo }}</div>")
+        @convert()
         def view():
             return dict(foo=42)
 
         with app.app_context():
-            self.assertEqual("<div>42</div>", view())
+            self.assertEqual(data, view())
+
+    def test_render_div_foo_42(self) -> None:
+        """render foo=42 within div"""
+
+        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+
+        @convert((dict, convert_dict), fmt="__{foo}__")
+        def view():
+            return dict(foo=42)
+
+        with app.app_context():
+            self.assertEqual("__42__", view())
 
     def test_render_p_bar_33(self) -> None:
         """render bar=33 within p"""
 
-        @dict_format(render_template_string, r"<p>{{ bar }}</p>")
+        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+
+        @convert((dict, convert_dict), fmt="~~{bar}~~")
         def view():
             return dict(bar=33)
 
         with app.app_context():
-            self.assertEqual("<p>33</p>", view())
+            self.assertEqual("~~33~~", view())
 
     def test_render_span_parameters(self) -> None:
         """render view parameters within span"""
 
-        @dict_format(render_template_string, r"<span>{{ smurf }}</span>")
+        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+
+        @convert((dict, convert_dict), fmt="--{smurf}--")
         def view(key, value="papa"):
             ret = {}
             ret[key] = value
             return ret
 
         with app.app_context():
-            self.assertEqual("<span>mama</span>", view("smurf", "mama"))
-
-    def test_no_fail_when_data_is_response(self) -> None:
-        """Text data don't cause exception"""
-
-        @dict_format(
-            render_template_string,
-            r"<span>{{ smurf }}</span>",
-            format_non_dict=[(WerkzeugResponse, lambda d: d)],
-        )
-        def view():
-            return WerkzeugResponse()
-
-        with app.app_context():
-            try:
-                view()
-            except TypeError:
-                self.fail("TypeError was raised")
+            self.assertEqual("--mama--", view("smurf", "mama"))
 
     def test_return_pure_response(self) -> None:
         """Text data don't cause exception"""
 
         response = WerkzeugResponse("abc")
 
-        @dict_format(
-            render_template_string,
-            r"<span>{{ smurf }}</span>",
-            format_non_dict=[(WerkzeugResponse, lambda d: d)],
+        convert_dict = lambda d, kwargs: kwargs["fmt"].format(**d)
+        return_plain = lambda d, _: d
+
+        @convert(
+            (dict, convert_dict),
+            (WerkzeugResponse, return_plain),
+            fmt="--{smurf}--",
         )
         def view():
             return response

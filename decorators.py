@@ -1,12 +1,11 @@
 """Decorator implementations"""
 from functools import partial, reduce
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Tuple
 
 from flask import jsonify, render_template
 from flask.wrappers import Response
-from werkzeug.wrappers.response import Response as WerkzeugResponse
 
-from app_types import TRender, TView, TViewDecorator
+from app_types import TView, TViewDecorator
 
 
 def endpoint(
@@ -43,20 +42,19 @@ def rest(view: TView) -> Callable[..., Response]:
     return wrapper
 
 
-def dict_format(
-    format_fn: TRender,
-    format_str: str,
-    format_non_dict: List[Tuple[type, Callable[[Any], Any]]] = None,
+def convert(
+    *converters: Tuple[type, Callable[[Any, dict], Any]],
+    **kwargs: Any,
 ) -> TViewDecorator:
     """Decorator factory to render view data via format_fn"""
 
     def decorator(view: TView) -> TView:
-        def wrapper(*args: Any, **kwargs: Any):
-            context = view(*args, **kwargs)
-            for ctx_type, format_fallback in format_non_dict or ():
-                if isinstance(context, ctx_type):
-                    return format_fallback(context)
-            return format_fn(format_str, **context)
+        def wrapper(*w_args: Any, **w_kwargs: Any):
+            context = view(*w_args, **w_kwargs)
+            for c_type, converter in converters or ():
+                if isinstance(context, c_type):
+                    return converter(context, kwargs)
+            return context
 
         return wrapper
 
@@ -76,7 +74,6 @@ def parameters(*args, **kwargs) -> TViewDecorator:
 
 
 template = partial(
-    dict_format,
-    render_template,
-    format_non_dict=[(WerkzeugResponse, lambda d: d)],
+    convert,
+    (dict, lambda d, kwargs: render_template(kwargs["name"], **d)),
 )
