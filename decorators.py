@@ -43,6 +43,8 @@ def rest(view: TView) -> Callable[..., Response]:
     return wrapper
 
 
+# TODO: Rework to provide format callbacks based on
+#       specific view return type
 def view_format(format_fn: TRender, format_str: Text) -> TViewDecorator:
     """Decorator factory to render view data via template
 
